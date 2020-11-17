@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class ProcessorApplication {
 
 @Configuration
 class AircraftProcessor {
-    @Bean
+/*    @Bean
     Function<Aircraft, EssentialAircraft> transformAC() {
         return ac -> {
             EssentialAircraft essentialAircraft = new EssentialAircraft(ac.getCallsign(),
@@ -29,25 +30,37 @@ class AircraftProcessor {
                     ac.getType());
 
             System.out.println(essentialAircraft);
-
+            
             return essentialAircraft;
         };
+    }*/
+
+/*
+    @Bean
+    Function<List<Aircraft>, List<EssentialAircraft>> transformAC() {
+        return listAC -> {
+            List<EssentialAircraft> listEAC = new ArrayList<>();
+
+            listAC.forEach(ac -> listEAC.add(new EssentialAircraft(ac.getCallsign(),
+                    ac.getReg(),
+                    ac.getType())));
+
+            listEAC.forEach(System.out::println);
+            System.out.println("");
+
+            return listEAC;
+        };
+    }
+*/
+
+    @Bean
+    Function<Flux<Aircraft>, Flux<EssentialAircraft>> transformAC() {
+        return fluxAC -> fluxAC.map(ac -> new EssentialAircraft(ac.getCallsign(),
+                ac.getReg(),
+                ac.getType()))
+            .log();
     }
 
-//    @Bean
-//    Function<List<Aircraft>, List<EssentialAircraft>> transformAC() {
-//        return listAC -> {
-//            List<EssentialAircraft> listEssential = new ArrayList<>();
-//
-//            listAC.forEach(ac -> listEssential.add(new EssentialAircraft(ac.getCallsign(),
-//                    ac.getReg(),
-//                    ac.getType())));
-//
-//            listEssential.forEach(System.out::println);
-//
-//            return listEssential;
-//        };
-//    }
 }
 
 @Data
