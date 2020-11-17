@@ -55,12 +55,24 @@ class AircraftProcessor {
 
     @Bean
     Function<Flux<Aircraft>, Flux<EssentialAircraft>> transformAC() {
-        return fluxAC -> fluxAC.map(ac -> new EssentialAircraft(ac.getCallsign(),
-                ac.getReg(),
-                ac.getType()))
-            .log();
+        return convertIt().andThen(reverseReg());
     }
 
+//    @Bean
+    Function<Flux<Aircraft>, Flux<EssentialAircraft>> convertIt() {
+        return fluxAC -> fluxAC.map(ac -> new EssentialAircraft(ac.getCallsign(),
+                ac.getReg(),
+                ac.getType()));
+        //.log();
+    }
+
+//    @Bean
+    Function<Flux<EssentialAircraft>, Flux<EssentialAircraft>> reverseReg() {
+        return fluxEAC -> fluxEAC.map(eac -> new EssentialAircraft(eac.getCallsign(),
+                new StringBuffer(eac.getReg()).reverse().toString(),
+                eac.getType()))
+            .log();
+    }
 }
 
 @Data
